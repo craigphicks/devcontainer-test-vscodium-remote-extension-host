@@ -1,84 +1,81 @@
-# Experiment using devcontainer-cli without vscode 
+# Evaluating devcontainer-cli Without VS Code
 
-This was an experiment to see how working without VSCode, but with  with the npm `devcontainers-cli` package would be useful or convenient.  
+This experiment evaluates the feasibility of using `devcontainer-cli` with VSCodium as an alternative to VS Code for devcontainer development. The goal was to assess whether this combination could provide a more open-source friendly development environment while maintaining devcontainer functionality.
 
-If that were convenient, then it might be possible to use VSCodium + devcontainer-cli as a replacement for VSCodium, and still be able to use and share devcontainers.
+## Overview
 
-The Dockerfile loads the vscodium server so that the vscodium would be able to communicate with the server backend.  No other features or extension were included - this is just the basic minimum that would be required before going any further.
+The setup includes a minimal configuration with VSCodium server as the backend, representing the basic requirements for devcontainer operation. This allows testing of core functionalities without additional extensions or features.
 
-## Prequisites
+## Prerequisites
 
-- `node` 
-- the npm packge `devcontainers-cli`
+- Node.js
+- `@devcontainers/cli` npm package
+- Docker
 
+## Repository Structure
 
-The directory structure in this repo looks like:
-
-```
+```bash
 .
 ├── .devcontainer
-│   ├── devcontainer.json
-│   ├── Dockerfile
-│   └── init-vscodium-server.sh
-├── devcontainer-up.sh
+│   ├── devcontainer.json    # Container configuration
+│   ├── Dockerfile          # Container image definition
+│   └── init-vscodium-server.sh  # Server initialization script
+├── devcontainer-up.sh      # Container startup script
 ```
 
-## Results
+## Key Findings
 
+### What Works
+- Container successfully starts and runs
+- Environment variables and configuration parameters are correctly passed
+- VSCodium server initializes properly
 
-The container does successfully start.  The variables and names are successfully interpreted and passed along.
+### Limitations
 
-However, the port forwarding section in `.devcontainer/devcontainer.json` is not iomplemented by the `devcontainer up` call.
-```
-	"forwardPorts": [11111]
-```
+1. **Port Forwarding**
+   - The `forwardPorts` configuration in `devcontainer.json` is not honored by `devcontainer up`:
+   ```json
+   "forwardPorts": [11111]
+   ```
+   - Manual port forwarding through Docker may be required as a workaround
 
+2. **Automatic Extension Installation**
+   - The `devcontainer` command automatically installs numerous VS Code extensions without user consent
+   - Notable pre-installed extensions include:
+     - Multiple VS Code debug extensions
+     - Git integration tools
+     - Language features for JavaScript, TypeScript, HTML, CSS
+     - Authentication modules for Microsoft and GitHub
+   - These extensions are installed regardless of whether they're needed or compatible with VSCodium
 
-In addition, `devcontainer` command automatically (without being asked) adds all these extensions to the container:
+3. **Documentation Gaps**
+   - Most devcontainer documentation assumes VS Code usage
+   - Manual extension installation procedures differ from VS Code (examples available in the [devcontainers/cli repository](https://github.com/devcontainers/cli/tree/main/example-usage))
 
-```
-codiserv@ce97d97b1911:~$ .vscodium-server/bin/codium-server --list-extensions
-ms-vscode.js-debug
-ms-vscode.js-debug-companion
-ms-vscode.vscode-js-profile-table
-vscode.configuration-editing
-vscode.css-language-features
-vscode.debug-auto-launch
-vscode.debug-server-ready
-vscode.emmet
-vscode.extension-editing
-vscode.git
-vscode.git-base
-vscode.github
-vscode.github-authentication
-vscode.grunt
-vscode.gulp
-vscode.html-language-features
-vscode.ipynb
-vscode.jake
-vscode.json-language-features
-vscode.markdown-language-features
-vscode.markdown-math
-vscode.media-preview
-vscode.merge-conflict
-vscode.microsoft-authentication
-vscode.npm
-vscode.php-language-features
-vscode.references-view
-vscode.search-result
-vscode.simple-browser
-vscode.terminal-suggest
-vscode.tunnel-forwarding
-vscode.typescript-language-features
-```
-I checked that installing and running the vscodium server (a.k.a. vscodium remote extension host) alone does not install any extensions.  Whether all those unasked for extensions are "extreme convenience" or "bloat and inflated attack surface" depends on your requirements.  Some of those extensions might be unusable in vscodium.
+## Technical Implications
 
-Extensions will also have to be installed manually. You can find examples how to do that in https://github.com/devcontainers/cli/tree/main/example-usage.  Note that said repository is expected to be used with vscode.
+1. **Backend Dependencies**
+   - While the frontend could use VSCodium, the backend remains dependent on Microsoft extensions
+   - Some pre-installed extensions may be proprietary and incompatible with VSCodium
 
-It also notable that the most documentation about devcontainers carries the implicit assumption that vscode is being used.
+2. **Alternative Considerations**
+   - For projects not requiring devcontainers, consider using open-source alternatives
+   - docker.io provides an open-source Docker implementation with full port forwarding capabilities
 
-## Conclusion 
+## Conclusion
 
-If there were a need to use devcontainers (e.g. cooperative work), and if the backend shown here were filled out with the missing functionalities, the advantages of a front end using vscodium would be possible. However but the backend (running the vscodium server) would still be packed with MS extensions, some of which may be propriatry so it would not be a clean break from VSCode or from closed source.
+The approach of using devcontainer-cli with VSCodium presents significant limitations:
 
-If there were no need to use devcontainers than there are better open source solutions.  The docker.io package is an open source only version of docker and can handle port forwarding, etc.
+1. Missing core functionality (e.g., port forwarding)
+2. Forced installation of potentially incompatible VS Code extensions
+3. Continued reliance on proprietary components in the backend
+
+For projects requiring devcontainer compatibility, this setup could potentially work with additional development. However, for projects prioritizing open-source solutions, alternative containerization approaches using pure docker.io might be more appropriate.
+
+## Future Considerations
+
+For those interested in pursuing this approach:
+- Development of custom port forwarding solutions
+- Creation of VSCodium-specific extension management
+- Documentation improvements for non-VS Code implementations
+
