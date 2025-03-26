@@ -1,0 +1,46 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/debian
+{
+	"name": "VSCodiumServer",
+	"image": "mcr.microsoft.com/devcontainers/base:debian-12",
+
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            "VSCODIUM_VERSION": "1.96.4.25017",
+            "USERNAME": "codiserv",
+            "SERVER_INSTALL_NAME": "vscodium-server"
+        },
+        // "options": {
+        //     "no-cache": true,
+        //     "progress": "plain"
+        // }
+    },
+    "remoteUser": "codiserv",    
+    "features": {
+        // "ghcr.io/devcontainers/features/common-utils:1": {}
+        // Uncomment the above line to enable common-utils, which might include:
+        // - Git
+        // - Curl
+        // - Wget
+        // - Common shell utilities
+        // - Text editors like Vim or Nano
+        // For more details, visit: https://containers.dev/features
+    },
+    // workspaceFolder sets the folder inside the container where your project will be located.
+    // workspaceMount binds the local workspace folder on your host machine to the specified folder inside the container.
+    "workspaceFolder": "/workspace",
+    // devcontainers will use pwd for localWorkspaceFolder. target must match the value of workspaceFolder.
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "containerEnv": {
+        "REMOTE_USER": "codiserv",
+        "SERVER_PORT": 11111,
+        "SERVER_PORT_IP": "localhost",
+        "SERVER_INSTALL_NAME": "vscodium-server",
+        "USERNAME": "codiserv"
+    },
+	// The postCreateCommand will be executed inside the container during `devcontainer up`
+       "postCreateCommand": "/usr/local/bin/init-vscodium-server.sh",
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [11111]
+}
