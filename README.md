@@ -79,5 +79,6 @@ It also notable that the most documentation about devcontainers carries the impl
 
 ## Conclusion 
 
-No.
+If there were a need to use devcontainers (e.g. cooperative work), and if the backend shown here were filled out with the missing functionalities, the advantages of a front end using vscodium would be possible. However but the backend (running the vscodium server) would still be packed with MS extensions, some of which may be propriatry so it would not be a clean break from VSCode or from closed source.
 
+If there were no need to use devcontainers than there are better open source solutions.  The docker.io package is an open source only version of docker and can handle port forwarding, etc.
